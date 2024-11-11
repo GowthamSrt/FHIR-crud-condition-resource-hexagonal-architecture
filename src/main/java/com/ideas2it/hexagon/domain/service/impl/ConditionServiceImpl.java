@@ -13,6 +13,8 @@ import com.ideas2it.hexagon.domain.service.ConditionService;
 import com.ideas2it.hexagon.infrastructure.mapper.ConditionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.Condition;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ConditionServiceImpl implements ConditionService {
 
+    private static final Logger LOGGER = LogManager.getLogger(ConditionServiceImpl.class);
     private static final IGenericClient client = FhirConfig.getClient();
     private final ConditionMapper conditionMapper;
     private final ObjectMapper objectMapper;
@@ -31,6 +34,7 @@ public class ConditionServiceImpl implements ConditionService {
                 .resource(condition)
                 .execute()
                 .getResource();
+        LOGGER.info("Condition added successfully!");
         return conditionMapper.toDto(addedCondition);
     }
 
@@ -40,6 +44,7 @@ public class ConditionServiceImpl implements ConditionService {
                 .resource(Condition.class)
                 .withId(id)
                 .execute();
+        LOGGER.info("Got the condition with Id : " + id);
         return conditionMapper.toDto(condition);
     }
 
@@ -52,6 +57,7 @@ public class ConditionServiceImpl implements ConditionService {
         client.delete()
                 .resource(condition)
                 .execute();
+        LOGGER.info("Condition removed successfully with Id : " + id);
         return "Deleted Successfully!";
     }
 
@@ -69,6 +75,7 @@ public class ConditionServiceImpl implements ConditionService {
                 .resource(patchedCondition)
                 .execute()
                 .getResource();
+        LOGGER.info("Condition updated successfully with id : " + id);
         return conditionMapper.toDto(updatedCondition);
 
     }
