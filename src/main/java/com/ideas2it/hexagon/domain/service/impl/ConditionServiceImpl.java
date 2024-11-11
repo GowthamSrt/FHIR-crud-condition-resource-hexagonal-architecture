@@ -9,6 +9,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.ideas2it.hexagon.application.dto.ConditionDto;
 import com.ideas2it.hexagon.config.FhirConfig;
+import com.ideas2it.hexagon.domain.exception.ResourceNotFoundException;
 import com.ideas2it.hexagon.domain.service.ConditionService;
 import com.ideas2it.hexagon.infrastructure.mapper.ConditionMapper;
 import lombok.RequiredArgsConstructor;
@@ -40,12 +41,17 @@ public class ConditionServiceImpl implements ConditionService {
 
     @Override
     public ConditionDto getConditionById(Long id) {
-        val condition = (Condition) client.read()
-                .resource(Condition.class)
-                .withId(id)
-                .execute();
-        LOGGER.info("Got the condition with Id : " + id);
-        return conditionMapper.toDto(condition);
+        try {
+            val condition = (Condition) client.read()
+                    .resource(Condition.class)
+                    .withId(id)
+                    .execute();
+            LOGGER.info("Got the condition with Id : " + id);
+            return conditionMapper.toDto(condition);
+        } catch (Exception e) {
+            LOGGER.warn("Condition with ID " + id + " not found.");
+            throw new ResourceNotFoundException("Condition with Id : " + id + " not found!");
+        }
     }
 
     @Override
@@ -63,20 +69,25 @@ public class ConditionServiceImpl implements ConditionService {
 
     @Override
     public ConditionDto updateCondition(Long id, JsonPatch patch) {
-        val condition = (Condition) client.read()
-                .resource(Condition.class)
-                .withId(id)
-                .execute();
-        ConditionDto conditionDto = conditionMapper.toDto(condition);
-        ConditionDto patchedDto = applyPatch(patch, conditionDto);
-        Condition patchedCondition = conditionMapper.toEntity(patchedDto);
-        patchedCondition.setId(id.toString());
-        Condition updatedCondition = (Condition) client.update()
-                .resource(patchedCondition)
-                .execute()
-                .getResource();
-        LOGGER.info("Condition updated successfully with id : " + id);
-        return conditionMapper.toDto(updatedCondition);
+        try {
+            val condition = (Condition) client.read()
+                    .resource(Condition.class)
+                    .withId(id)
+                    .execute();
+            ConditionDto conditionDto = conditionMapper.toDto(condition);
+            ConditionDto patchedDto = applyPatch(patch, conditionDto);
+            Condition patchedCondition = conditionMapper.toEntity(patchedDto);
+            patchedCondition.setId(id.toString());
+            Condition updatedCondition = (Condition) client.update()
+                    .resource(patchedCondition)
+                    .execute()
+                    .getResource();
+            LOGGER.info("Condition updated successfully with id : " + id);
+            return conditionMapper.toDto(updatedCondition);
+        } catch (ResourceNotFoundException e) {
+            LOGGER.warn("Condition with ID " + id + " not found");
+            throw new ResourceNotFoundException("Condition with ID " + id + " not found!");
+        }
 
     }
 
@@ -89,6 +100,4 @@ public class ConditionServiceImpl implements ConditionService {
             throw new RuntimeException("Failed to apply JSON patch to condition dto!");
         }
     }
-
-
 }
