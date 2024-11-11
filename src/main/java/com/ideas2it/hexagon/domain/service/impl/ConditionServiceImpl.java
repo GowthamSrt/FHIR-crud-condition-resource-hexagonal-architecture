@@ -19,6 +19,8 @@ import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.r4.model.Condition;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ConditionServiceImpl implements ConditionService {
@@ -41,25 +43,28 @@ public class ConditionServiceImpl implements ConditionService {
 
     @Override
     public ConditionDto getConditionById(Long id) {
-        try {
-            val condition = (Condition) client.read()
-                    .resource(Condition.class)
-                    .withId(id)
-                    .execute();
-            LOGGER.info("Got the condition with Id : " + id);
-            return conditionMapper.toDto(condition);
-        } catch (Exception e) {
-            LOGGER.warn("Condition with ID " + id + " not found.");
-            throw new ResourceNotFoundException("Condition with Id : " + id + " not found!");
-        }
+        Condition condition = Optional.ofNullable((Condition) client.read()
+                .resource(Condition.class)
+                .withId(id)
+                .execute())
+                .orElseThrow(() -> {
+                    LOGGER.warn("Condition with Given Id : " + id + " is not found!");
+                    throw new ResourceNotFoundException("Condition with Given Id : " + id + " is not found!");
+                });
+        LOGGER.info("Retrieved Condition with Id : " + id);
+        return conditionMapper.toDto(condition);
     }
 
     @Override
     public String removeCondition(Long id) {
-        val condition = (Condition) client.read()
-                .resource(Condition.class)
-                .withId(id)
-                .execute();
+        Condition condition = Optional.ofNullable((Condition) client.read()
+                        .resource(Condition.class)
+                        .withId(id)
+                        .execute())
+                .orElseThrow(() -> {
+                    LOGGER.warn("Condition with Given Id : " + id + " is not found!");
+                    throw new ResourceNotFoundException("Condition with Given Id : " + id + " is not found!");
+                });
         client.delete()
                 .resource(condition)
                 .execute();
@@ -69,26 +74,24 @@ public class ConditionServiceImpl implements ConditionService {
 
     @Override
     public ConditionDto updateCondition(Long id, JsonPatch patch) {
-        try {
-            val condition = (Condition) client.read()
-                    .resource(Condition.class)
-                    .withId(id)
-                    .execute();
-            ConditionDto conditionDto = conditionMapper.toDto(condition);
-            ConditionDto patchedDto = applyPatch(patch, conditionDto);
-            Condition patchedCondition = conditionMapper.toEntity(patchedDto);
-            patchedCondition.setId(id.toString());
-            Condition updatedCondition = (Condition) client.update()
-                    .resource(patchedCondition)
-                    .execute()
-                    .getResource();
-            LOGGER.info("Condition updated successfully with id : " + id);
-            return conditionMapper.toDto(updatedCondition);
-        } catch (ResourceNotFoundException e) {
-            LOGGER.warn("Condition with ID " + id + " not found");
-            throw new ResourceNotFoundException("Condition with ID " + id + " not found!");
-        }
-
+        Condition condition = Optional.ofNullable((Condition) client.read()
+                        .resource(Condition.class)
+                        .withId(id)
+                        .execute())
+                .orElseThrow(() -> {
+                    LOGGER.error("Condition with ID " + id + " not found for update.");
+                    return new ResourceNotFoundException("Condition with ID " + id + " not found for update.");
+                });
+        ConditionDto conditionDto = conditionMapper.toDto(condition);
+        ConditionDto patchedDto = applyPatch(patch, conditionDto);
+        Condition patchedCondition = conditionMapper.toEntity(patchedDto);
+        patchedCondition.setId(id.toString());
+        Condition updatedCondition = (Condition) client.update()
+                .resource(patchedCondition)
+                .execute()
+                .getResource();
+        LOGGER.info("Condition updated successfully with ID: " + id);
+        return conditionMapper.toDto(updatedCondition);
     }
 
     private ConditionDto applyPatch(JsonPatch patch, ConditionDto conditionDto) {
