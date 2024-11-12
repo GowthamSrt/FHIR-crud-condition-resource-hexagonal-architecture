@@ -1,8 +1,8 @@
-package com.ideas2it.hexagon.application.ports.inbound;
+package com.ideas2it.hexagon.adaptor.in;
 
 import com.github.fge.jsonpatch.JsonPatch;
-import com.ideas2it.hexagon.application.dto.ConditionDto;
-import com.ideas2it.hexagon.domain.service.ConditionService;
+import com.ideas2it.hexagon.domain.condition.dto.ConditionDto;
+import com.ideas2it.hexagon.domain.condition.port.in.ConditionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

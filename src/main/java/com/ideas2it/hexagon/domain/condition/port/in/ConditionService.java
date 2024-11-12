@@ -1,7 +1,7 @@
-package com.ideas2it.hexagon.domain.service;
+package com.ideas2it.hexagon.domain.condition.port.in;
 
 import com.github.fge.jsonpatch.JsonPatch;
-import com.ideas2it.hexagon.application.dto.ConditionDto;
+import com.ideas2it.hexagon.domain.condition.dto.ConditionDto;
 
 public interface ConditionService {
     ConditionDto addCondition(ConditionDto conditionDto);

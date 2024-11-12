@@ -1,4 +1,4 @@
-package com.ideas2it.hexagon.application.dto;
+package com.ideas2it.hexagon.domain.condition.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
-package com.ideas2it.hexagon.infrastructure.mapper;
+package com.ideas2it.hexagon.domain.mapper;
 
-import com.ideas2it.hexagon.application.dto.ConditionDto;
+import com.ideas2it.hexagon.domain.condition.dto.ConditionDto;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;

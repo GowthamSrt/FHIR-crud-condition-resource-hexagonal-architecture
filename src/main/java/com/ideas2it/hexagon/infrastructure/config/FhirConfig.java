@@ -1,4 +1,4 @@
-package com.ideas2it.hexagon.config;
+package com.ideas2it.hexagon.infrastructure.config;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;

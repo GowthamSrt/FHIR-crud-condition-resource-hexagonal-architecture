@@ -1,17 +1,16 @@
-package com.ideas2it.hexagon.domain.service.impl;
+package com.ideas2it.hexagon.domain.condition.usecase;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.ideas2it.hexagon.application.dto.ConditionDto;
-import com.ideas2it.hexagon.config.FhirConfig;
-import com.ideas2it.hexagon.domain.exception.ResourceNotFoundException;
-import com.ideas2it.hexagon.domain.service.ConditionService;
-import com.ideas2it.hexagon.infrastructure.mapper.ConditionMapper;
+import com.ideas2it.hexagon.domain.condition.dto.ConditionDto;
+import com.ideas2it.hexagon.infrastructure.config.FhirConfig;
+import com.ideas2it.hexagon.infrastructure.exception.ResourceNotFoundException;
+import com.ideas2it.hexagon.domain.condition.port.in.ConditionService;
+import com.ideas2it.hexagon.domain.mapper.ConditionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.apache.logging.log4j.LogManager;
